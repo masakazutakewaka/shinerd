@@ -6,6 +6,7 @@ module Shinerd
       graph = Shinerd::Graph.new
       @nodes = graph.nodes
       @edges = graph.edges
+      @relations = graph.relations
     end
   end
 end
