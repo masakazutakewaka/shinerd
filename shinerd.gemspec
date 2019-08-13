@@ -9,9 +9,8 @@ Gem::Specification.new do |spec|
   spec.version     = Shinerd::VERSION
   spec.authors     = ["masakazutakewaka"]
   spec.email       = ["takewakamma@gmail.com"]
-  spec.homepage    = "TODO"
-  spec.summary     = "TODO: Summary of Shinerd."
-  spec.description = "TODO: Description of Shinerd."
+  spec.homepage    = "https://github.com/masakazutakewaka/shinerd"
+  spec.summary     = "Shiny erd generator"
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
