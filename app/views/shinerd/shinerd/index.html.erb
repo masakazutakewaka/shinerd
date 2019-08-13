@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://dagrejs.github.io/project/graphlib-dot/v0.6.3/graphlib-dot.js"></script>
+  <script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+</head>
+<body>
+<svg width=800 height=600>
+  <g/>
+</svg>
+</body>
+<script>
+    // Create the input graph
+    var g = new dagreD3.graphlib.Graph({ multigraph: true })
+        .setGraph({})
+        .setDefaultEdgeLabel(function() { return {}; });
+
+    <% @nodes.each do |name, html| %>
+    g.setNode("<%= name %>",  { labelType: 'html', label: "<%= html.html_safe %>" });
+    <% end %>
+
+    <% @edges.each do |e| %>
+    g.setEdge("<%= e[:head] %>", "<%= e[:tail] %>");
+    <% end %>
+
+    // Create the renderer
+    var render = new dagreD3.render();
+
+    // Set up an SVG group so that we can translate the final graph.
+    var svg = d3.select("svg"),
+        svgGroup = svg.append("g");
+
+    // Run the renderer. This is what draws the final graph.
+    render(d3.select("svg g"), g);
+
+    // Center the graph
+    var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
+    svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+    svg.attr("height", g.graph().height + 40);
+
+    // change style of linked nodes and edges when hover
+    d3.selectAll('.node')
+        .on('mouseenter', function(nodeName){
+            d3.select(`.${nodeName}`)
+                .style("color", "orange");
+            activateRelated(nodeName);
+        })
+        .on('mouseleave', function(nodeName){
+            d3.select(`.${nodeName}`)
+                .style("color", "black");
+            deactivateRelated(nodeName);
+        });
+
+    let activateRelated = (nodeName) => {
+        var neighborNames = g.neighbors(nodeName);
+        Array.from(neighborNames, name => {
+            d3.select(`.${name}`).style('color', 'aqua');
+        });
+    };
+    let deactivateRelated = (nodeName) => {
+        var neighborNames = g.neighbors(nodeName);
+        Array.from(neighborNames, name => {
+            d3.select(`.${name}`).style('color', 'black');
+        });
+    };
+</script>
+</html>

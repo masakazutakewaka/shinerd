@@ -20,7 +20,6 @@ module Shinerd
         next if tails.empty?
         tails.each { |tail| edges << { head: t, tail: tail } }
       end
-      #require 'byebug'; byebug
       edges
     end
 
