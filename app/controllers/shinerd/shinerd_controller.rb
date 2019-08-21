@@ -7,6 +7,8 @@ module Shinerd
       @nodes = graph.nodes
       @edges = graph.edges
       @relations = graph.relations
+
+      render layout: false
     end
   end
 end
