@@ -12,7 +12,7 @@ module Shinerd
       return @nodes unless @nodes.empty?
 
       tables.each do |t|
-        return unless Object.const_defined? t.singularize.capitalize
+        next unless Object.const_defined? t.singularize.camelcase
         @nodes[t] = "<div class='#{t}'><div>#{t}</div><table><tr><th>column</th><th>type</th></tr>#{ApplicationRecord.connection.columns(t).map { |c| "<tr><td>#{c.name}</td><td>#{c.type}</td></tr></div>" }.join('') }"
       end
       @nodes
@@ -21,31 +21,44 @@ module Shinerd
     def edges
       return @edges unless @edges.empty?
 
+      # TODO: proper signs for each kind of arrows
       tables.each do |t|
-        return unless Object.const_defined? t.singularize.capitalize
-        klass = t.singularize.capitalize.constantize
-        tails = klass.reflections.keys.map(&:pluralize)
-        next if tails.empty?
-        tails.each { |tail| @edges << { head: t, tail: tail } }
+        next unless Object.const_defined? t.singularize.camelcase
+        klass = t.singularize.camelcase.constantize
+        klass.reflections.each do |key, ref|
+          key = key.pluralize
+          next unless tables.include? key
+          exclusive_edge(t, key, ref.macro.to_sym)
+        end
       end
       @edges
     end
 
-    # { users: { parents: ['hoge', 'ia'], childs: ['posts', 'likes'] } }
     def relations
-      edges.each do |edge|
-        head, tail = edge.values
-        @relations[head][:parent] << tail
-        @relations[tail][:child] << head
+      tables.each do |t|
+        next unless Object.const_defined? t.singularize.camelcase
+        klass = t.singularize.camelcase.constantize
+        klass.reflections.each do |key, ref|
+          head = t
+          tail = key.pluralize
+          relation = ref.macro.to_sym
+          next unless tables.include? tail
+          @relations[head][relation] << tail
+        end
       end
       @relations
     end
 
     private
 
+    def exclusive_edge(head, tail, relation)
+      return if @edges.any? { |e| e[:head] == tail && e[:tail] == head }
+      @edges << { head: head, tail: tail, relation: relation, opts: { arrowhead: 'normal', arrowtail: 'undirected'} }
+    end
+
     def initialize_relations
       @relations = {}
-      tables.each { |t| @relations[t] = { parent: [], child: [] } }
+      tables.each { |t| @relations[t] = { has_many: [], has_one: [], belongs_to: [] } }
     end
 
     def tables

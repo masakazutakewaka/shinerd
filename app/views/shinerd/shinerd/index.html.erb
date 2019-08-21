@@ -24,7 +24,6 @@
         .setGraph({})
         .setDefaultEdgeLabel(function() { return {}; });
 
-    <% #require 'byebug'; byebug %>
     <% @nodes.each do |name, html| %>
     g.setNode("<%= name %>",  { labelType: 'html', label: "<%= html.html_safe %>" });
     <% end %>
@@ -33,18 +32,7 @@
     g.setEdge("<%= e[:head] %>", "<%= e[:tail] %>");
     <% end %>
 
-    var relations = {}
-    <% @relations.each do |node, associated| %>
-    var parents = {};
-    var childs = {};
-    <% if !(associated[:parent].empty?) %>
-    parents = { parent: ['<%= associated[:parent].join("', '")%>'] }
-    <% end %>
-    <% if !(associated[:child].empty?) %>
-    childs = { child: ['<%= associated[:child].join("', '")%>'] }
-    <% end %>
-    relations['<%= node %>'] = Object.assign(parents, childs)
-    <% end %>
+    var relations = <%= @relations.to_json.html_safe %>
 
     // Create the renderer
     var render = new dagreD3.render();
@@ -66,8 +54,9 @@
         .on('mouseenter', function(nodeName){
             d3.select(`.${nodeName}`)
                 .style("color", "orange");
-            activateParents(nodeName);
-            activateChilds(nodeName);
+            activateHasManys(nodeName);
+            activateHasOnes(nodeName);
+            activateBelongsTos(nodeName);
         })
         .on('mouseleave', function(nodeName){
             d3.select(`.${nodeName}`)
@@ -75,17 +64,24 @@
             deactivateNodes(nodeName);
         });
 
-    let activateParents = (nodeName) => {
-        if (relations[nodeName].parent === undefined) { return }
-        Array.from(relations[nodeName].parent, name => {
+    let activateHasManys = (nodeName) => {
+        if (relations[nodeName].has_many === undefined) { return }
+        Array.from(relations[nodeName].has_many, name => {
             d3.select(`.${name}`).style('color', 'aqua');
         });
     };
 
-    let activateChilds = (nodeName) => {
-        if (relations[nodeName].child === undefined) { return }
-        Array.from(relations[nodeName].child, name => {
+    let activateHasOnes = (nodeName) => {
+        if (relations[nodeName].has_one === undefined) { return }
+        Array.from(relations[nodeName].has_one, name => {
             d3.select(`.${name}`).style('color', 'green');
+        });
+    };
+
+    let activateBelongsTos = (nodeName) => {
+        if (relations[nodeName].belongs_to === undefined) { return }
+        Array.from(relations[nodeName].belongs_to, name => {
+            d3.select(`.${name}`).style('color', 'magenta');
         });
     };
 
