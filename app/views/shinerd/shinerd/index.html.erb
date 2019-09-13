@@ -14,14 +14,32 @@
   <script src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
 </head>
 <body>
-<svg width=800 height=600>
-  <g/>
-</svg>
+  <div class="node-colors">
+    <div>
+      selected table :
+      <span style="color:orange">orange</span>
+    </div>
+    <div>
+      has many :
+      <span style="color:aqua;">aqua</span>
+    </div>
+    <div>
+      has one :
+      <span style="color:forestgreen;">green</span>
+    </div>
+    <div>
+      belongs to :
+      <span style="color:magenta;">magenta</span>
+    </div>
+  </div>
+  <svg>
+    <g/>
+  </svg>
 </body>
 <script>
     // Create the input graph
     var g = new dagreD3.graphlib.Graph({ multigraph: true })
-        .setGraph({})
+        .setGraph({rankdir: 'LR'})
         .setDefaultEdgeLabel(function() { return {}; });
 
     <% @nodes.each do |name, html| %>
@@ -47,48 +65,54 @@
     // Center the graph
     var xCenterOffset = (svg.attr("width") - g.graph().width) / 2;
     svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
-    svg.attr("height", g.graph().height + 40);
+    svg.attr("height", window.innerHeight).attr("width", window.innerWidth);
+    svg.attr("viewBox",`0 0 ${g.graph().width} ${g.graph().height}`);
 
     // change style of linked nodes and edges when hover
     d3.selectAll('.node')
         .on('mouseenter', function(nodeName){
-            d3.select(`.${nodeName}`)
-                .style("color", "orange");
-            activateHasManys(nodeName);
-            activateHasOnes(nodeName);
-            activateBelongsTos(nodeName);
+            activateNodes(nodeName);
         })
-        .on('mouseleave', function(nodeName){
-            d3.select(`.${nodeName}`)
-                .style("color", "black");
-            deactivateNodes(nodeName);
+        .on('mouseleave', function(){
+            deactivateNodes();
         });
+
+    let activateNodes = (nodeName) => {
+        activateSelected(nodeName);
+        activateHasManys(nodeName);
+        activateHasOnes(nodeName);
+        activateBelongsTos(nodeName);
+    };
+
+    let deactivateNodes = () => {
+        d3.selectAll(`.selected`).classed('selected', false);
+        d3.selectAll(`.has-many`).classed('has-many', false);
+        d3.selectAll(`.has-one`).classed('has-one', false);
+        d3.selectAll(`.belongs-to`).classed('belongs-to', false);
+    };
+
+    let activateSelected = (nodeName) => {
+        d3.select(`.${nodeName}`).classed('selected', true);
+    };
 
     let activateHasManys = (nodeName) => {
         if (relations[nodeName].has_many === undefined) { return }
         Array.from(relations[nodeName].has_many, name => {
-            d3.select(`.${name}`).style('color', 'aqua');
+            d3.select(`.${name}`).classed('has-many', true);
         });
     };
 
     let activateHasOnes = (nodeName) => {
         if (relations[nodeName].has_one === undefined) { return }
         Array.from(relations[nodeName].has_one, name => {
-            d3.select(`.${name}`).style('color', 'green');
+            d3.select(`.${name}`).classed('has-one', true);
         });
     };
 
     let activateBelongsTos = (nodeName) => {
         if (relations[nodeName].belongs_to === undefined) { return }
         Array.from(relations[nodeName].belongs_to, name => {
-            d3.select(`.${name}`).style('color', 'magenta');
-        });
-    };
-
-    let deactivateNodes = (nodeName) => {
-        var neighborNames = g.neighbors(nodeName);
-        Array.from(neighborNames, name => {
-            d3.select(`.${name}`).style('color', 'black');
+            d3.select(`.${name}`).classed('belongs-to', true);
         });
     };
 </script>

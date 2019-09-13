@@ -1,7 +1,15 @@
+.node-colors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    color: black;
+    border: black solid 1px;
+}
+
 text {
     font-weight: 300;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
 }
 
 .node rect {
@@ -15,6 +23,30 @@ text {
     stroke-width: 1.5px;
 }
 
-.node:hover {
+table {
+    #border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+.node-name {
+    border: 1px solid black;
+    margin-bottom: 2px;
+}
+.selected {
+    color: orange;
+}
+
+.has-many {
     color: aqua;
+}
+
+.has-one {
+    color: forestgreen;
+}
+
+.belongs-to {
+    color: magenta;
 }

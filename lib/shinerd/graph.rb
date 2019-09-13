@@ -13,7 +13,7 @@ module Shinerd
 
       tables.each do |t|
         next unless Object.const_defined? t.singularize.camelcase
-        @nodes[t] = "<div class='#{t}'><div>#{t}</div><table><tr><th>column</th><th>type</th></tr>#{ApplicationRecord.connection.columns(t).map { |c| "<tr><td>#{c.name}</td><td>#{c.type}</td></tr></div>" }.join('') }"
+        @nodes[t] = "<div class='#{t}'><div class='node-name'>#{t}</div><table><tr><th>column</th><th>type</th></tr>#{ApplicationRecord.connection.columns(t).map { |c| "<tr><td>#{c.name}</td><td>#{c.type}</td></tr></div>" }.join('') }"
       end
       @nodes
     end
