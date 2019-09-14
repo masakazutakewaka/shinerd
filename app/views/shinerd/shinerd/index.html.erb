@@ -3,7 +3,6 @@
 <head>
   <title>Shinerd</title>
   <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
 
   <%= stylesheet_link_tag    "shinerd/application", media: "all" %>
 
@@ -78,10 +77,10 @@
         });
 
     let activateNodes = (nodeName) => {
-        activateSelected(nodeName);
         activateHasManys(nodeName);
         activateHasOnes(nodeName);
         activateBelongsTos(nodeName);
+        activateSelected(nodeName);
     };
 
     let deactivateNodes = () => {

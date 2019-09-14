@@ -1,6 +1,6 @@
 module Shinerd
   class Graph
-    IGNORE_TABLES = %w(schema_migrations ar_internal_metadata)
+    IGNORE_TABLES = %w(schema_migrations ar_internal_metadata versions) #versions <- PaperTrail
 
     def initialize
       @nodes = {}
