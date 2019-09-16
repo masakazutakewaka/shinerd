@@ -1,14 +1,27 @@
-# Shinerd
-Short description and motivation.
+# [WIP] Shinerd
+Interactive ERD Generator.
 
 ## Usage
-How to use my plugin.
+Add this to your `routes.rb`.
+```ruby
+if Rails.env.development?
+  mount ShinerdEngine => 'shinerd/index'
+end
+```
+
+Open `localhost:3000/shinerd`.
+
+You will see the ERD like this:
+
+![shinerd_demo](https://user-images.githubusercontent.com/26586593/64940441-d53efb00-d818-11e9-9b6e-14c0b2d6b442.gif)
 
 ## Installation
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'shinerd'
+group :development do
+  gem 'shinerd'
+end
 ```
 
 And then execute:
