@@ -1,5 +1,5 @@
 # [WIP] Shinerd
-Interactive ERD Generator.
+ERD Generator interactive on browser.
 
 ## Usage
 Add this to your `routes.rb`.
